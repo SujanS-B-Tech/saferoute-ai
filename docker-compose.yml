@@ -1,0 +1,8 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment: { POSTGRES_USER: saferoute, POSTGRES_PASSWORD: change-me, POSTGRES_DB: saferoute }
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+  # backend/frontend services are added in Phase 2 (frontend) and Phase 11 (Dockerfiles)
+volumes: { pgdata: {} }
