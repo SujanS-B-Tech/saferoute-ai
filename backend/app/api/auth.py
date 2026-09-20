@@ -26,7 +26,17 @@ def register(body: RegisterIn, db: Session = Depends(get_db)):
     db.add(user)
     db.commit()
     audit(db, user.id, "user.register", "user", user.id)
-    return user
+    
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "phone": user.phone,
+        "role": "standard_user",
+        "preferred_language": user.preferred_language,
+        "location_permission": "while_using",
+        "location_history_days": 0
+    }
 
 
 @auth_router.post("/login", response_model=TokenOut)
