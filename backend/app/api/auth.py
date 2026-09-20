@@ -85,3 +85,25 @@ def delete_contact(contact_id: int, user: User = Depends(get_current_user), db: 
     db.delete(c)
     db.commit()
     audit(db, user.id, "contact.delete", "emergency_contact", contact_id)
+
+@users_router.delete("/me/history", status_code=204)
+def delete_location_history(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    from app.models import Journey, Route
+    # delete all journeys cleanly
+    journeys = db.query(Journey).filter(Journey.user_id == user.id).all()
+    for j in journeys:
+        db.delete(j)
+    # delete all routes connected
+    routes = db.query(Route).filter(Route.user_id == user.id).all()
+    for r in routes:
+        db.delete(r)
+        
+    db.commit()
+    audit(db, user.id, "user.history_wipe", "user", user.id)
+
+@users_router.delete("/me", status_code=204)
+def delete_account(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    audit(db, user.id, "user.delete", "user", user.id)
+    # cascading deletes handle the rest thanks to cascade="all, delete-orphan"
+    db.delete(user)
+    db.commit()

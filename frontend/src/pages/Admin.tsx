@@ -21,7 +21,7 @@ export default function Admin() {
   }, []);
 
   const loadReports = () => {
-    api.getPendingReports().then(setReports).catch(e => setErr(e.message));
+    api.getPendingReports().then((res) => setReports(res)).catch(e => setErr(e.message));
   };
 
   const moderate = async (id: number, status: "approved" | "rejected") => {
@@ -29,7 +29,7 @@ export default function Admin() {
     setBusy(true); setErr(null);
     try {
       await api.moderateReport(id, { status });
-      setReports((prev) => prev?.filter(r => r.id !== id) || null);
+      setReports((prev: Report[] | null) => prev?.filter((r: Report) => r.id !== id) || null);
     } catch (x) {
       setErr(x instanceof ApiError ? x.message : "Failed to moderate report");
     } finally {
@@ -90,7 +90,7 @@ export default function Admin() {
         )}
 
         <div className="grid gap-4 md:grid-cols-2">
-          {reports?.map(r => (
+          {reports?.map((r: Report) => (
             <Card key={r.id}>
               <div className="flex justify-between border-b pb-2 mb-2">
                 <h3 className="font-bold text-slate-800 capitalize leading-tight">

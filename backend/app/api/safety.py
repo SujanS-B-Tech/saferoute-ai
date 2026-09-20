@@ -3,8 +3,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.models import SafetyDataSource
+from app.core.security import get_current_user
+from app.models import Role, SafetyDataSource, PrivacyClass, CCTVRecord, SafetyIndicator
 from app.services.safety.providers import FACTOR_LABELS
+from app.services.geo import jitter_coords
 
 router = APIRouter(prefix="/safety", tags=["safety"])
 
@@ -30,3 +32,40 @@ def sources(db: Session = Depends(get_db)):
             "message": None if r else f"{label} data is not currently available.",
         })
     return out
+
+@router.get("/map-indicators")
+def map_indicators(lat: float, lon: float, radius_m: int = 2000, db: Session = Depends(get_db), user = Depends(get_current_user)):
+    from app.services.geo import bbox
+    s, w, n, e = bbox([(lat, lon)], radius_m)
+    
+    # We load CCTVs and overrides just to show them visually on the map mask tests
+    cctvs = db.scalars(select(CCTVRecord).where(
+        CCTVRecord.latitude.between(s, n), CCTVRecord.longitude.between(w, e)
+    )).all()
+    
+    overrides = db.scalars(select(SafetyIndicator).where(
+        SafetyIndicator.indicator_type == "admin_override",
+        SafetyIndicator.latitude.between(s, n), SafetyIndicator.longitude.between(w, e)
+    )).all()
+
+    is_admin = user.role in [Role.SUPER_ADMIN.value, Role.DATA_MODERATOR.value]
+    
+    results = []
+    for c in cctvs:
+        use_lat, use_lon = c.latitude, c.longitude
+        if c.privacy_class == PrivacyClass.RESTRICTED.value and not is_admin:
+            use_lat, use_lon = jitter_coords(use_lat, use_lon)
+            
+        results.append({
+            "type": "CCTV", "latitude": use_lat, "longitude": use_lon,
+            "is_exact": is_admin
+        })
+        
+    for o in overrides:
+        results.append({
+            "type": "Admin Override", "latitude": o.latitude, "longitude": o.longitude,
+            "is_exact": True
+        })
+        
+    return results
+

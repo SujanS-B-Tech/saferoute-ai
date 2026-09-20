@@ -29,7 +29,7 @@ export default function Reports() {
   }, []);
 
   const loadReports = () => {
-    api.myReports().then(setReports).catch(e => setErr(e.message));
+    api.myReports().then(setReports).catch((e: any) => setErr(e.message));
   };
 
   const useMyLocation = async () => {
@@ -51,10 +51,10 @@ export default function Reports() {
         longitude: location[1],
         description
       });
-      setReports((prev) => [r, ...(prev || [])]);
+      setReports((prev: Report[] | null) => [r, ...(prev || [])]);
       setDescription("");
       setLocation(null);
-    } catch (x) {
+    } catch (x: any) {
       setErr(x instanceof ApiError ? x.message : "Something went wrong submitting report.");
     } finally {
       setBusy(false);

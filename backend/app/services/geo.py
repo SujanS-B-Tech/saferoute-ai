@@ -1,4 +1,5 @@
 import math
+import random
 
 EARTH_R = 6_371_000.0
 LatLon = tuple[float, float]
@@ -45,6 +46,19 @@ def split_polyline(pts: list[LatLon], max_len_m: float = 300.0) -> list[list[Lat
 
 def midpoint(seg: list[LatLon]) -> LatLon:
     return seg[len(seg) // 2] if len(seg) % 2 else interpolate(seg[len(seg) // 2 - 1], seg[len(seg) // 2], 0.5)
+
+
+def jitter_coords(lat: float, lon: float, min_offset_deg: float = 0.001, max_offset_deg: float = 0.003) -> tuple[float, float]:
+    """Adds a randomized offset to coordinates for masking restricted exact locations.
+    Approx 0.001 degrees is ~111 meters.
+    """
+    lat_jit = random.uniform(min_offset_deg, max_offset_deg)
+    lon_jit = random.uniform(min_offset_deg, max_offset_deg)
+    
+    if random.choice([True, False]): lat_jit = -lat_jit
+    if random.choice([True, False]): lon_jit = -lon_jit
+        
+    return lat + lat_jit, lon + lon_jit
 
 
 def bbox(pts: list[LatLon], pad_m: float) -> tuple[float, float, float, float]:

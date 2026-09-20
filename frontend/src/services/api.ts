@@ -48,6 +48,8 @@ export const api = {
   contacts: () => request<Contact[]>("/users/me/contacts"),
   addContact: (b: Omit<Contact, "id">) => post<Contact>("/users/me/contacts", b),
   deleteContact: (id: number) => request<void>(`/users/me/contacts/${id}`, { method: "DELETE" }),
+  deleteHistory: () => request<void>("/users/me/history", { method: "DELETE" }),
+  deleteAccount: () => request<void>("/users/me", { method: "DELETE" }),
   planRoute: (b: {
     origin: { lat: number; lon: number }; destination: { lat: number; lon: number };
     mode: TravelMode; preference: Preference; departure_time?: string;

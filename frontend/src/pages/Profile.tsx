@@ -18,6 +18,21 @@ export default function Profile() {
     catch (x) { setMsg({ ok: false, text: x instanceof ApiError ? x.message : "Something went wrong." }); }
     finally { setBusy(false); }
   };
+
+  const wipeHistory = async () => {
+    if (!window.confirm("Are you sure you want to completely erase all your journey history? This cannot be undone.")) return;
+    setBusy(true); setMsg(null);
+    try { await api.deleteHistory(); setMsg({ ok: true, text: "Location history wiped successfully." }); }
+    catch (x) { setMsg({ ok: false, text: x instanceof ApiError ? x.message : "Failed to wipe history." }); }
+    finally { setBusy(false); }
+  };
+
+  const eraseAccount = async () => {
+    if (!window.confirm("WARNING. This will permanently delete your account, saved contacts, settings, and routing history. Are you absolutely certain?")) return;
+    setBusy(true); setMsg(null);
+    try { await api.deleteAccount(); window.location.href = "/"; }
+    catch (x) { setMsg({ ok: false, text: x instanceof ApiError ? x.message : "Failed to delete account." }); setBusy(false); }
+  };
   return (
     <div className="mx-auto max-w-xl space-y-4">
       <Card>
@@ -36,6 +51,14 @@ export default function Profile() {
             <select className={inputCls} value={days} onChange={(e) => setDays(Number(e.target.value))}>{[0, 1, 7, 30].map((d) => <option key={d} value={d}>{d === 0 ? "Don't keep (recommended)" : `${d} day${d > 1 ? "s" : ""}`}</option>)}</select></Field>
           {msg && <Alert tone={msg.ok ? "info" : "error"}>{msg.text}</Alert>}
           <Button onClick={save} disabled={busy}>{busy ? "Saving…" : "Save settings"}</Button>
+        </div>
+      </Card>
+      <Card className="border-red-200">
+        <h2 className="font-bold text-red-700">Danger Zone</h2>
+        <p className="mt-1 text-sm text-slate-600 mb-4">Execute structural data erasure protocols.</p>
+        <div className="flex flex-col sm:flex-row gap-3 mt-4 border-t pt-4">
+          <Button variant="secondary" className="border-red-600 text-red-700 hover:bg-red-50 bg-white" disabled={busy} onClick={wipeHistory}>Delete Location History</Button>
+          <Button variant="primary" className="bg-red-700 hover:bg-red-800 border-red-800" disabled={busy} onClick={eraseAccount}>Delete Account</Button>
         </div>
       </Card>
     </div>
