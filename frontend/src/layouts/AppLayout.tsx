@@ -23,12 +23,20 @@ export default function AppLayout() {
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2">
           <Link to="/" className="text-lg font-bold text-brand-900">SafeRoute <span className="text-brand-600">AI</span></Link>
           <nav aria-label="Main" className="flex flex-1 gap-1 overflow-x-auto">
-            {NAV.map((n) => (
-              <NavLink key={n.to} to={n.to} end={n.to === "/app"}
-                className={({ isActive }) => `whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium ${isActive ? "bg-brand-50 text-brand-900" : "text-slate-600 hover:bg-slate-100"}`}>
+            {NAV.map(n => (
+              <NavLink key={n.key} to={n.to} 
+                className={({isActive}) => `block rounded-lg px-3 py-2 text-sm font-medium ${isActive ? "bg-brand-50 text-brand-700" : "text-slate-700 hover:bg-slate-100"}`}
+              >
                 {t(n.key)}
               </NavLink>
             ))}
+            {(user?.role === "super_admin" || user?.role === "data_moderator") && (
+              <NavLink to="/app/admin" 
+                className={({isActive}) => `block rounded-lg px-3 py-2 text-sm font-bold ${isActive ? "bg-amber-100 text-amber-800" : "text-amber-700 hover:bg-amber-50"}`}
+              >
+                Admin Shield
+              </NavLink>
+            )}
           </nav>
           <select aria-label="Language" value={lang} onChange={(e) => setLang(e.target.value as "en" | "ta")} className="min-h-10 rounded-lg border border-slate-300 px-2 text-sm">
             <option value="en">English</option><option value="ta">தமிழ்</option>

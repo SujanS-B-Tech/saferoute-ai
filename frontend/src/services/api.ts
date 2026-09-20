@@ -65,7 +65,10 @@ export const api = {
   getAlert: (id: number) => request<EmergencyAlert>(`/emergency/alerts/${id}`),
   activateAlert: (id: number) => post<EmergencyAlert>(`/emergency/alerts/${id}/activate`),
   closeAlert: (id: number) => post<EmergencyAlert>(`/emergency/alerts/${id}/close`),
-  cancelAlert: (id: number) => post<EmergencyAlert>(`/emergency/alerts/${id}/cancel`),
   createReport: (b: { category: string; latitude: number; longitude: number; description: string; photo_ref?: string | null }) => post<Report>("/reports", b),
   myReports: () => request<Report[]>("/reports/me"),
+  getPendingReports: () => request<Report[]>("/admin/reports/pending"),
+  moderateReport: (id: number, b: { status: "approved" | "rejected"; note?: string }) => 
+    request<Report>(`/admin/reports/${id}/moderate`, { method: "PATCH", body: JSON.stringify(b), headers: { "Content-Type": "application/json" } }),
+  deployOverride: (b: { latitude: number; longitude: number; severity_label: string; radius_m?: number }) => post<{message:string}>("/admin/override", b),
 };

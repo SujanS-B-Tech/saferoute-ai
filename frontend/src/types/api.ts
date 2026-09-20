@@ -4,7 +4,8 @@ export type Preference = "balanced" | "safety_priority" | "accessibility_priorit
 export type LatLon = [number, number];
 
 export interface User {
-  id: number; name: string; email: string; phone: string | null; role: string;
+  id: number; name: string; email: string; phone: string | null;
+  role: "super_admin" | "data_moderator" | "authorized_partner" | "standard_user";
   preferred_language: "en" | "ta"; location_permission: "never" | "while_using" | "journey_only";
   location_history_days: number;
 }

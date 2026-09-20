@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth, emergency, facilities, journeys, reports, routes, safety
+from app.api import auth, emergency, facilities, journeys, reports, routes, safety, admin
 from app.core.config import DEMO_BANNER, get_settings
 from app.core.database import Base, engine
 from app.core.security import rate_limit_middleware
@@ -25,7 +25,7 @@ def create_app() -> FastAPI:
     app.add_middleware(CORSMiddleware, allow_origins=s.cors_origin_list, allow_credentials=False,
                        allow_methods=["GET", "POST", "PATCH", "DELETE"], allow_headers=["Authorization", "Content-Type"])
     app.middleware("http")(rate_limit_middleware)
-    for r in (auth.auth_router, auth.users_router, routes.router, facilities.router, safety.router, journeys.router, emergency.router, reports.router):
+    for r in (auth.auth_router, auth.users_router, routes.router, facilities.router, safety.router, journeys.router, emergency.router, reports.router, admin.router):
         app.include_router(r)
 
     @app.get("/health", tags=["system"])

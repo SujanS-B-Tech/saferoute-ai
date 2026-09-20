@@ -12,6 +12,7 @@ import Journeys from "./pages/Journeys";
 import Navigation from "./pages/Navigation";
 import Emergency from "./pages/Emergency";
 import Reports from "./pages/Reports";
+import Admin from "./pages/Admin";
 
 
 export default function App() {
@@ -32,6 +33,7 @@ export default function App() {
             <Route path="navigation/:id" element={<Navigation />} />
             <Route path="emergency" element={<Emergency />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="admin" element={<Admin />} />
           </Route>
         </Route>
         <Route path="*" element={<div className="p-10 text-center"><p className="text-lg font-semibold">Page not found</p><a className="text-brand-700 underline" href="/">Go home</a></div>} />
